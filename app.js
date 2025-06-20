@@ -67,6 +67,33 @@ app.post('/login', async (req, res) => {
 });
 
 
+app.post('/partidas', async(req, res) => {
+
+  const { codigo, estado } = req.body;
+
+  const query = `INSERT INTO partidas(codigo, estado) VALUES (?,?)`;
+
+  try{
+
+    const [results] = await db.query(query, [codigo, estado]);
+
+    res.status(201).json({
+      id: results.insertId,
+      codigo, 
+      estado
+
+    })
+
+  } catch (err) {
+    console.error('ERROR EN PARTIDAS', err);
+    res.status(500).json({ success: false, message: 'Error del servidor' });
+  }
+
+
+});
+
+
+
 //------------------------------------------------------------------------------------
 
 const PORT = 3000;
