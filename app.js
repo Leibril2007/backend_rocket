@@ -69,18 +69,21 @@ app.post('/login', async (req, res) => {
 
 app.post('/partidas', async(req, res) => {
 
-  const { codigo, estado } = req.body;
+  const { codigo, estado, juego, nivel, tiempo } = req.body;
 
-  const query = `INSERT INTO partidas(codigo, estado) VALUES (?,?)`;
+  const query = `INSERT INTO partidas(codigo, estado, juego, nivel, tiempo) VALUES (?,?,?,?,?)`;
 
   try{
 
-    const [results] = await db.query(query, [codigo, estado]);
+    const [results] = await db.query(query, [codigo, estado, juego, nivel, tiempo]);
 
     res.status(201).json({
       id: results.insertId,
       codigo, 
-      estado
+      estado,
+      juego,
+      nivel,
+      tiempo
 
     })
 
@@ -89,8 +92,31 @@ app.post('/partidas', async(req, res) => {
     res.status(500).json({ success: false, message: 'Error del servidor' });
   }
 
-
 });
+
+// ACTUALIZAR PARTIDA 
+app.put('/partidas/:codigo/estado', async (req, res) => {
+  const { codigo } = req.params;
+  const { estado } = req.body;
+
+  console.log("codigo", codigo);
+
+  const query = `UPDATE partidas SET estado = ? WHERE codigo = ?`;
+
+  try {
+    const [result] = await db.query(query, [estado, codigo]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ success: false, message: 'Partida no encontrada' });
+    }
+
+    res.json({ success: true, message: 'Estado actualizado', codigo, estado });
+  } catch (err) {
+    console.error('ERROR AL ACTUALIZAR ESTADO', err);
+    res.status(500).json({ success: false, message: 'Error del servidor' });
+  }
+});
+
 
 
 
