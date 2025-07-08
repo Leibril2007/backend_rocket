@@ -1,6 +1,6 @@
 const mysql = require('mysql2/promise');
 
-const db = mysql.createPool({
+const connection = mysql.createPool({
   host: 'bnypomdjooi40fbyi0iz-mysql.services.clever-cloud.com',
   user: 'ufblh1sdfkvar8km',
   password: 'HfHWkNTpLzgi5D5bCqGK',
@@ -10,10 +10,10 @@ const db = mysql.createPool({
   queueLimit: 0
 });
 
-// Verificación de conexión (una vez al arrancar)
+// Verificación de conexión
 (async () => {
   try {
-    const conn = await db.getConnection();
+    const conn = await connection.getConnection();
     console.log('✅ Conexión a la base de datos establecida');
     conn.release();
   } catch (err) {
@@ -21,4 +21,4 @@ const db = mysql.createPool({
   }
 })();
 
-module.exports = db;
+module.exports = { connection };
