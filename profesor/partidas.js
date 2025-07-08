@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const db = require('../config/base_datos');
 
-router.post('/partidas', async (req, res) => {
+/* router.post('/partidas', async (req, res) => {
   const { codigo, estado } = req.body;
 
   try {
@@ -13,6 +13,36 @@ router.post('/partidas', async (req, res) => {
     res.status(500).json({ success: false, message: 'Error del servidor' });
   }
 });
+ */
+
+
+router.post('/partidas', async(req, res) => {
+
+  const { codigo, estado, juego, nivel, tiempo } = req.body;
+
+  const query = `INSERT INTO partidas(codigo, estado, juego, nivel, tiempo) VALUES (?,?,?,?,?)`;
+
+  try{
+
+    const [results] = await db.query(query, [codigo, estado, juego, nivel, tiempo]);
+
+    res.status(201).json({
+      id: results.insertId,
+      codigo, 
+      estado,
+      juego,
+      nivel,
+      tiempo
+
+    })
+
+  } catch (err) {
+    console.error('ERROR EN PARTIDAS', err);
+    res.status(500).json({ success: false, message: 'Error del servidor' });
+  }
+
+});
+
 
 
 // ACTUALIZAR PARTIDA 
@@ -36,6 +66,8 @@ router.put('/partidasEstadoCambio/:codigo', async (req, res) => {
     }
   });
 
+
+/* PARTIDA INICIAR PARA ALUMNOS */
 
 router.get('/partidas/inicio', async (req, res) => {
   const codigo_partida = req.query.codigo;
