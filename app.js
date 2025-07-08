@@ -3,7 +3,6 @@ const cors = require('cors');
 
 const app = express();
 
-// CORS con lista blanca
 app.use(cors({
   origin: function (origin, callback) {
     const allowed = [
@@ -23,15 +22,15 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// Montar rutas
+// PROFESOR
 app.use(require('./profesor/login.js'));
 app.use(require('./profesor/partidas.js'));
 app.use(require('./alumnos/jugadores.js'));
 
+// RUTA ECOTRIVIA
+app.use('/api/resultados', require('./ecoTrivia-back/routes/resultadoRoutes'));
 
 const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
 });
-
-module.exports = app;
