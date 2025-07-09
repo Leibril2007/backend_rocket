@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../config/base_datos');
+const { connection } = require('../config/base_datos');
 
 // Endpoint de prueba
 router.get('/', (req, res) => {
@@ -15,7 +15,7 @@ router.post('/login', async (req, res) => {
     WHERE (usuario = ? OR correo = ?) AND contraseña = ?`;
 
   try {
-    const [results] = await db.query(sql, [usuario, usuario, contraseña]);
+    const [results] = await connection.query(sql, [usuario, usuario, contraseña]);
 
     if (results.length === 0) {
       return res.status(401).json({ success: false, message: 'Usuario o contraseña incorrectos' });
@@ -37,7 +37,7 @@ router.post('/registro', async (req, res) => {
   }
 
   try {
-    await db.query("INSERT INTO profesores(usuario, correo, contraseña) VALUES (?, ?, ?)", [usuario, correo, contraseña]);
+    await connection.query("INSERT INTO profesores(usuario, correo, contraseña) VALUES (?, ?, ?)", [usuario, correo, contraseña]);
     res.status(201).json({ success: true, message: 'Usuario registrado exitosamente' });
   } catch (err) {
     console.error('❌ Error en registro:', err);
