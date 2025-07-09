@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../config/base_datos');
+const { connection } = require('../config/base_datos');
 
 router.post('/players', async (req, res) => {
   const { usuario, avatar } = req.body;
@@ -10,12 +10,12 @@ router.post('/players', async (req, res) => {
   }
 
   try {
-    const [existing] = await db.query('SELECT id FROM players WHERE name = ?', [usuario]);
+    const [existing] = await connection.query('SELECT id FROM players WHERE name = ?', [usuario]);
     if (existing.length > 0) {
       return res.json({ success: true, id: existing[0].id });
     }
 
-    const [result] = await db.query('INSERT INTO players(name, avatar) VALUES (?, ?)', [usuario, avatar]);
+    const [result] = await connection.query('INSERT INTO players(name, avatar) VALUES (?, ?)', [usuario, avatar]);
     res.status(201).json({ success: true, id: result.insertId });
   } catch (err) {
     console.error('❌ Error creando player:', err);
@@ -31,12 +31,12 @@ router.post('/jugadores_partida', async (req, res) => {
   }
 
   try {
-    const [partida] = await db.query('SELECT * FROM partidas WHERE codigo = ?', [codigo_partida]);
+    const [partida] = await connection.query('SELECT * FROM partidas WHERE codigo = ?', [codigo_partida]);
     if (partida.length === 0) {
       return res.status(404).json({ success: false, message: 'Código de partida no válido' });
     }
 
-    await db.query('INSERT INTO jugadores_partidas (id_player, codigo_partida) VALUES (?, ?)', [id_player, codigo_partida]);
+    await connection.query('INSERT INTO jugadores_partidas (id_player, codigo_partida) VALUES (?, ?)', [id_player, codigo_partida]);
     res.status(201).json({ success: true, message: "Jugador añadido a la partida" });
 
   } catch (err) {
@@ -55,7 +55,7 @@ router.get('/jugadores_partida/:codigo', async (req, res) => {
     WHERE jp.codigo_partida = ?`;
 
   try {
-    const [results] = await db.query(query, [codigo_partida]);
+    const [results] = await connection.query(query, [codigo_partida]);
     res.json({ success: true, jugadores: results });
   } catch (err) {
     console.error('❌ ERROR al obtener jugadores:', err);
