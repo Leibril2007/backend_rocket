@@ -31,7 +31,7 @@ app.use(require('./alumnos/jugadores.js'));
 app.use('/api/resultados', require('./ecoTrivia-back/routes/resultadoRoutes'));
 
 //RUTA LABERINTO
-app.use('/laberinto', require('./laberinto-back/routes/partidas.js'));
+app.use('/laberinto', require('./laberinto-back/routes/partidasLaberinto.js'));
 
 const PORT = 3000;
 app.listen(PORT, () => {
