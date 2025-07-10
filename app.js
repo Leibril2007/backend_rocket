@@ -33,6 +33,10 @@ app.use('/api/resultados', require('./ecoTrivia-back/routes/resultadoRoutes'));
 //RUTA LABERINTO
 app.use('/laberinto', require('./laberinto-back/routes/partidasLaberinto.js'));
 
+//RUTA TRIVIA
+app.use('/api/resultadosDania', require('./trivia-backend/routes/resultados.js'));
+
+
 const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
