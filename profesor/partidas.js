@@ -3,7 +3,7 @@ const router = express.Router();
 const { connection } = require('../config/base_datos');
 
 
-router.post('/partidas', async(req, res) => {
+/* router.post('/partidas', async(req, res) => {
 
   const { codigo, estado, juego, nivel, tiempo } = req.body;
 
@@ -28,7 +28,30 @@ router.post('/partidas', async(req, res) => {
     res.status(500).json({ success: false, message: 'Error del servidor' });
   }
 
+}); */
+
+router.post('/partidas', async (req, res) => {
+  const { codigo, estado, juego, niveles, tiempo } = req.body; // ← "niveles" en lugar de "nivel"
+
+  const query = `INSERT INTO partidas (codigo, estado, juego, niveles, tiempo) VALUES (?, ?, ?, ?, ?)`;
+
+  try {
+    const [results] = await connection.query(query, [codigo, estado, juego, niveles, tiempo]);
+
+    res.status(201).json({
+      id: results.insertId,
+      codigo,
+      estado,
+      juego,
+      niveles,  // ← devuelves los niveles seleccionados como string tipo "1,2,4"
+      tiempo
+    });
+  } catch (err) {
+    console.error('ERROR EN PARTIDAS', err);
+    res.status(500).json({ success: false, message: 'Error del servidor' });
+  }
 });
+
 
 
 // ACTUALIZAR PARTIDA
