@@ -63,4 +63,26 @@ router.get('/jugadores_partida/:codigo', async (req, res) => {
   }
 });
 
+router.get('/jugadores_partidas', async (req, res) => {
+  const query = `
+    SELECT * FROM jugadores_partidas
+  `;
+
+  try {
+    const [results] = await connection.query(query);
+
+    res.json({
+      success: true,
+      jugadores_partidas: results,
+    });
+  } catch (err) {
+    console.error('❌ ERROR al obtener jugadores_partidas:', err);
+    res.status(500).json({
+      success: false,
+      message: 'Error del servidor al obtener los registros',
+    });
+  }
+});
+
+
 module.exports = router;
