@@ -133,7 +133,7 @@ router.get('/partidas/inicio', async (req, res) => {
 
 // ELECCION DE JUEGO
   
-router.get('/partidas/juegoPorProfe/:codigoPartida', async (req, res) => {
+/* router.get('/partidas/juegoPorProfe/:codigoPartida', async (req, res) => {
   const { codigoPartida } = req.params;
 
   try {
@@ -156,8 +156,37 @@ router.get('/partidas/juegoPorProfe/:codigoPartida', async (req, res) => {
     console.error('❌ ERROR al DAR JUEGO ELEGIDO:', err);
     return res.status(500).json({ success: false, message: 'Error del servidor' });
   }
-});
+}); */
  
+
+router.get('/partidas/juegoPorProfe/:codigoPartida', async (req, res) => {
+  const { codigoPartida } = req.params;
+
+  try {
+    const [juegoSel] = await connection.query(
+      `SELECT estado, juego, niveles, tiempo FROM partidas WHERE codigo = ?`,
+      [codigoPartida]
+    );
+
+    if (!juegoSel.length) {
+      return res.status(404).json({ success: false, message: 'Juego no encontrado' });
+    }
+
+    return res.json({
+      success: true,
+      estado: juegoSel[0].estado,
+      juego: juegoSel[0].juego,
+      niveles: juegoSel[0].niveles,
+      tiempo: juegoSel[0].tiempo
+    });
+
+  } catch (err) {
+    console.error('❌ ERROR al DAR JUEGO ELEGIDO:', err);
+    return res.status(500).json({ success: false, message: 'Error del servidor' });
+  }
+});
+
+
 
 
 module.exports = router;
