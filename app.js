@@ -38,6 +38,8 @@ app.use('/laberinto', require('./laberinto-back/routes/partidasLaberinto.js'));
 //RUTA TRIVIA
 app.use('/api/resultadosDania', require('./trivia-backend/routes/resultados.js'));
 
+//RUTA EMOJI
+app.use('/api/partidas', require('./emoji/routes/partidas.js'));
 
 const PORT = 3000;
 app.listen(PORT, () => {
