@@ -84,5 +84,32 @@ router.get('/jugadores_partidas', async (req, res) => {
   }
 });
 
+// Ruta para consultar si un jugador ya finalizó su partida
+router.get('/jugador_finaliza/:codigo/:usuario', async (req, res) => {
+  const { codigo, usuario } = req.params;
+
+  try {
+    // Buscar el id del jugador por nombre
+    const [players] = await connection.query('SELECT id FROM players WHERE name = ?', [usuario]);
+    if (players.length === 0) {
+      return res.status(404).json({ success: false, message: 'Jugador no encontrado' });
+    }
+    const id_player = players[0].id;
+
+    // Buscar el registro en jugadores_partidas
+    const [registros] = await connection.query(
+      'SELECT terminado FROM jugadores_partidas WHERE id_player = ? AND codigo_partida = ?',
+      [id_player, codigo]
+    );
+    if (registros.length === 0) {
+      return res.status(404).json({ success: false, message: 'No se encontró la partida para el jugador' });
+    }
+    const terminado = registros[0].terminado === 1 || registros[0].terminado === true;
+    res.json({ success: true, terminado });
+  } catch (err) {
+    console.error('❌ ERROR al consultar si jugador finalizó:', err);
+    res.status(500).json({ success: false, message: 'Error del servidor' });
+  }
+});
 
 module.exports = router;
