@@ -2,33 +2,18 @@ const express = require('express');
 const router = express.Router();
 const { connection } = require('../config/base_datos');
 
+let partidasTiempo = {}; // clave: código, valor: { tiempo, nivel }
 
-/* router.post('/partidas', async(req, res) => {
-
-  const { codigo, estado, juego, nivel, tiempo } = req.body;
-
-  const query = `INSERT INTO partidas(codigo, estado, juego, nivel, tiempo) VALUES (?,?,?,?,?)`;
-
-  try{
-
-    const [results] = await connection.query(query, [codigo, estado, juego, nivel, tiempo]);
-
-    res.status(201).json({
-      id: results.insertId,
-      codigo, 
-      estado,
-      juego,
-      nivel,
-      tiempo
-
-    })
-
-  } catch (err) {
-    console.error('ERROR EN PARTIDAS', err);
-    res.status(500).json({ success: false, message: 'Error del servidor' });
+setInterval(() => {
+  for (const codigo in partidasTiempo) {
+    partidasTiempo[codigo].tiempo++;
+    if (partidasTiempo[codigo].tiempo % 30 === 0) {
+      partidasTiempo[codigo].nivel++;
+    }
   }
+}, 1000);
 
-}); */
+
 
 router.post('/partidas', async (req, res) => {
   const { codigo, estado, juego, niveles, tiempo } = req.body; // ← "niveles" en lugar de "nivel"
@@ -37,6 +22,8 @@ router.post('/partidas', async (req, res) => {
 
   try {
     const [results] = await connection.query(query, [codigo, estado, juego, niveles, tiempo]);
+
+    partidasTiempo[codigo] = { tiempo: 0, nivel: 1 };
 
     res.status(201).json({
       id: results.insertId,
@@ -52,6 +39,16 @@ router.post('/partidas', async (req, res) => {
   }
 });
 
+router.get('/estado-juego/:codigo', (req, res) => {
+  const codigo = req.params.codigo;
+
+  if (!partidasTiempo[codigo]) {
+    return res.status(404).json({ success: false, message: 'Partida no encontrada' });
+  }
+
+  const { tiempo, nivel } = partidasTiempo[codigo];
+  res.json({ success: true, tiempo, nivel });
+});
 
 
 // ACTUALIZAR PARTIDA
@@ -132,32 +129,6 @@ router.get('/partidas/inicio', async (req, res) => {
 });
 
 // ELECCION DE JUEGO
-  
-/* router.get('/partidas/juegoPorProfe/:codigoPartida', async (req, res) => {
-  const { codigoPartida } = req.params;
-
-  try {
-    const [juegoSel] = await connection.query(
-      `SELECT estado, juego FROM partidas WHERE codigo = ?`,
-      [codigoPartida]
-    );
-
-    if (!juegoSel.length) {
-      return res.status(404).json({ success: false, message: 'Juego no encontrado' });
-    }
-
-    return res.json({
-      success: true,
-      estado: juegoSel[0].estado,
-      juego: juegoSel[0].juego
-    });
-
-  } catch (err) {
-    console.error('❌ ERROR al DAR JUEGO ELEGIDO:', err);
-    return res.status(500).json({ success: false, message: 'Error del servidor' });
-  }
-}); */
- 
 
 router.get('/partidas/juegoPorProfe/:codigoPartida', async (req, res) => {
   const { codigoPartida } = req.params;
@@ -185,7 +156,6 @@ router.get('/partidas/juegoPorProfe/:codigoPartida', async (req, res) => {
     return res.status(500).json({ success: false, message: 'Error del servidor' });
   }
 });
-
 
 
 

@@ -9,8 +9,8 @@ app.use(cors({
       'http://127.0.0.1:5500',
       'http://127.0.0.1:5502',
       'http://localhost:5500',
-      'http://localhost:5502',
-      'https://frontend-rocket-play.onrender.com'
+      'http://localhost:5502'
+/*       'https://frontend-rocket-play.onrender.com' */
     ];
     if (!origin || allowed.includes(origin)) {
       callback(null, true);
@@ -27,6 +27,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(require('./profesor/login.js'));
 app.use(require('./profesor/partidas.js'));
 app.use(require('./alumnos/jugadores.js'));
+//app.use(require('./profesor/tiempo.js'));
 
 // RUTA ECOTRIVIA
 app.use('/api/resultados', require('./ecoTrivia-back/routes/resultadoRoutes'));
